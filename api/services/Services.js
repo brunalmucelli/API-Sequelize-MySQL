@@ -1,3 +1,4 @@
+const { where } = require('sequelize')
 const database = require('../models')
 
 class Services {
@@ -5,8 +6,16 @@ class Services {
         this.nomeDoModelo = nomeDoModelo
     }
 
-    async pegaTodosOsRegistros() {
-        return database[this.nomeDoModelo].findAll()
+    async pegaTodosOsRegistros(where = {}) {
+        return database[this.nomeDoModelo].findAll({ where: { ...where } })
+    }
+
+    async pegaUmRegistro(where = {}) {
+        return database[this.nomeDoModelo].findOne({ where: { ...where } })
+    }
+
+    async criaUmRegistro(dados){
+        return database[this.nomeDoModelo].create(dados)
     }
 
     async atualizaRegistro(dadosAtualizados, id, transacao = {}) {
@@ -17,6 +26,10 @@ class Services {
     async atualizaRegistros(dadosAtualizados, where, transacao = {}) {
         return database[this.nomeDoModelo]
             .update(dadosAtualizados, { where: { ...where } }, transacao)
+    }
+
+    async apagaRegistro(id){
+        return database[this.nomeDoModelo].destroy({where: {id: id}})
     }
 
 }

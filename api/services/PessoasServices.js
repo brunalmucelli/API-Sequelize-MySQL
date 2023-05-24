@@ -17,12 +17,14 @@ class PessoasServices extends Services {
             .findAll({ where: { ...where } })
     }
 
-    async cancelaPessoaEMatriculas(estudanteId){
-        return database.sequelize.transaction(async transacao => { 
-          await super.atualizaRegistro({ ativo: false }, estudanteId, { transaction: transacao })
-          await this.matriculas.atualizaRegistros({ status: 'cancelado' }, { estudante_id: estudanteId }, { transaction: transacao })
+    async cancelaPessoaEMatriculas(estudanteId) {
+        return database.sequelize.transaction(async transacao => {
+            await super.atualizaRegistro({ ativo: false }, estudanteId, { transaction: transacao })
+            await this.matriculas.atualizaRegistros({ status: 'cancelado' }, { estudante_id: estudanteId }, { transaction: transacao })
         })
-      }
+    }
+
+    
 }
 
 module.exports = PessoasServices

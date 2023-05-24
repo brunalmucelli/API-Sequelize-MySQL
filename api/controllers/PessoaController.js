@@ -1,4 +1,4 @@
-const {PessoasServices} = require('../services/index.js')
+const { PessoasServices } = require('../services/index.js')
 const pessoasServices = new PessoasServices()
 
 
@@ -24,11 +24,7 @@ class PessoaController {
   static async pegaUmaPessoa(req, res) {
     const { id } = req.params
     try {
-      const umaPessoa = await database.Pessoas.findOne({
-        where: {
-          id: Number(id)
-        }
-      })
+      const umaPessoa = await pessoasServices.pegaUmRegistro({ id })
       return res.status(200).json(umaPessoa)
     } catch (error) {
       return res.status(500).json(error.message)
@@ -38,7 +34,7 @@ class PessoaController {
   static async criaPessoa(req, res) {
     const novaPessoa = req.body
     try {
-      const novaPessoaCriada = await database.Pessoas.create(novaPessoa)
+      const novaPessoaCriada = await pessoasServices.criaUmRegistro(novaPessoa)
       return res.status(200).json(novaPessoaCriada)
     } catch (error) {
       return res.status(500).json(error.message)
@@ -49,13 +45,8 @@ class PessoaController {
     const novasInfos = req.body
     const { id } = req.params
     try {
-      await database.Pessoas.update(novasInfos, { where: { id: Number(id) } })
-      const pessoaAtualizada = database.Pessoas.findOne({
-        where: {
-          id: Number(id)
-        }
-      }
-      )
+      await pessoasServices.atualizaRegistro(novasInfos, Number(id))
+      const pessoaAtualizada = pessoasServices.pegaUmRegistro({ id })
       return res.status(200).json(pessoaAtualizada)
     } catch (error) {
       return res.status(500).json(error.message)
@@ -65,7 +56,7 @@ class PessoaController {
   static async apagaPessoa(req, res) {
     const { id } = req.params
     try {
-      await database.Pessoas.destroy({ where: { id: Number(id) } })
+      await pessoasServices.apagaRegistro(Number(id))
       return res.status(200).json({ mensagem: `id ${id} deletado` })
 
     } catch (error) {
@@ -112,7 +103,7 @@ class PessoaController {
       const matriculaAtualizada = database.Matriculas.findOne({
         where: {
           id: Number(matriculaId)
-        } 
+        }
       }
       )
       return res.status(200).json(matriculaAtualizada)
@@ -191,8 +182,8 @@ class PessoaController {
   static async cancelaPessoa(req, res) {
     const { estudanteId } = req.params
     try {
-        await pessoasServices.cancelaPessoaEMatriculas(Number(estudanteId))
-        return res.status(200).json({ message: `Matrículas referentes ao estudante ${estudanteId} canceladas` })
+      await pessoasServices.cancelaPessoaEMatriculas(Number(estudanteId))
+      return res.status(200).json({ message: `Matrículas referentes ao estudante ${estudanteId} canceladas` })
     } catch (error) {
       return res.status(500).json(error.message)
     }
